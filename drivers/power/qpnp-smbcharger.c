@@ -9231,7 +9231,7 @@ static int cclogic_notifier_callback(struct notifier_block *self, unsigned long 
 #endif
 
 #ifdef SUPPORT_SCREEN_ON_FCC_OP
-#define SCREEN_ON_MAX_FCC_MA			1400
+#define SCREEN_ON_MAX_FCC_MA			2400
 static int reset_max_fcc_ma(struct smbchg_chip *chip, int ma, bool state)
 {
 	int rc = 0;
