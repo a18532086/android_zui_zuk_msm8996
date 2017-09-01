@@ -13,8 +13,8 @@ module(){
   find . -name '*.ko' -exec cp -av {} modules/ \;
   # strip modules 
   ${TOOL_CHAIN_PATH}strip --strip-unneeded modules/*
-  mkdir modules/qca_cld
-  cp modules/wlan.ko modules/qca_cld/qca_cld_wlan.ko
+  #mkdir modules/qca_cld
+  #cp modules/wlan.ko modules/qca_cld/qca_cld_wlan.ko
 }
 dtbuild(){
   ./tools/dtbToolCM -2 -o $objdir/arch/arm64/boot/dt.img -s 4096 -p $objdir/scripts/dtc/ $objdir/arch/arm64/boot/dts/
