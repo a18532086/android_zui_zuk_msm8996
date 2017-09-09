@@ -1,6 +1,6 @@
 #!/bin/bash
 export CONFIG_FILE="z2_plus_perf_defconfig"
-export TOOL_CHAIN_PATH="/home/a18532086/UBERTC-aarch64-linux-android-4.9/bin/aarch64-linux-android-"
+export TOOL_CHAIN_PATH="/home/a18532086/Downloads/gcc-linaro-7.1.1-2017.08-rc1-x86_64_aarch64-linux-gnu/bin/aarch64-linux-gnu-"
 export objdir="../out"
 compile() {
   mkdir ../out
