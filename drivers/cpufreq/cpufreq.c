@@ -2407,7 +2407,7 @@ static struct notifier_block __refdata cpufreq_cpu_notifier = {
 	.notifier_call = cpufreq_cpu_callback,
 };
 
-#if defined CONFIG_PRODUCT_Z2_PLUS || defined CONFIG_PRODUCT_Z2_ROW
+#if 0
 int cpufreq_overfreq(unsigned int enable)
 {
 	struct cpufreq_frequency_table *freq_table;

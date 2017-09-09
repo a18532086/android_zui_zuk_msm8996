@@ -219,7 +219,7 @@ static const struct kernel_param_ops param_ops_num_clusters = {
 };
 device_param_cb(num_clusters, &param_ops_num_clusters, NULL, 0644);
 
-#if defined CONFIG_PRODUCT_Z2_PLUS || defined CONFIG_PRODUCT_Z2_ROW
+#if 0
 /* Zuk overfreq---- start ---- */
 unsigned int overfreq_enable = 0;
 extern int cpufreq_overfreq(unsigned int enable);
