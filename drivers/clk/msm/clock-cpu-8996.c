@@ -1330,6 +1330,7 @@ static int cpu_clock_8996_driver_probe(struct platform_device *pdev)
 
 	pte_efuse = readl_relaxed(vbases[EFUSE_BASE]);
 	perfclspeedbin = ((pte_efuse >> EFUSE_SHIFT) & EFUSE_MASK);
+	++perfclspeedbin;
 	dev_info(&pdev->dev, "using perf/pwr/cbf speed bin %u and pvs_ver %d\n",
 		 perfclspeedbin, pvs_ver);
 
