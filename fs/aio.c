@@ -1560,7 +1560,9 @@ long do_io_submit(aio_context_t ctx_id, long nr,
 	struct kioctx *ctx;
 	long ret = 0;
 	int i = 0;
+#ifndef CONFIG_AIO_SSD_ONLY
 	struct blk_plug plug;
+#endif
 
 	if (unlikely(nr < 0))
 		return -EINVAL;

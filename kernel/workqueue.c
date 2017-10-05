@@ -273,11 +273,7 @@ static bool wq_disable_numa;
 module_param_named(disable_numa, wq_disable_numa, bool, 0444);
 
 /* see the comment above the definition of WQ_POWER_EFFICIENT */
-#ifdef CONFIG_WQ_POWER_EFFICIENT_DEFAULT
 static bool wq_power_efficient = true;
-#else
-static bool wq_power_efficient;
-#endif
 
 module_param_named(power_efficient, wq_power_efficient, bool, 0444);
 
@@ -1440,8 +1436,6 @@ static void __queue_delayed_work(int cpu, struct workqueue_struct *wq,
 		return;
 	}
 
-	timer_stats_timer_set_start_info(&dwork->timer);
-
 	dwork->wq = wq;
 	dwork->cpu = cpu;
 	timer->expires = jiffies + delay;
@@ -1699,9 +1693,7 @@ static struct worker *create_worker(struct worker_pool *pool)
 		goto fail;
 
 	set_user_nice(worker->task, pool->attrs->nice);
-
-	/* prevent userland from meddling with cpumask of workqueue workers */
-	worker->task->flags |= PF_NO_SETAFFINITY;
+	kthread_bind_mask(worker->task, pool->attrs->cpumask);
 
 	/* successful, attach the worker to the pool */
 	worker_attach_to_pool(worker, pool);
@@ -4109,7 +4101,7 @@ struct workqueue_struct *__alloc_workqueue_key(const char *fmt,
 		}
 
 		wq->rescuer = rescuer;
-		rescuer->task->flags |= PF_NO_SETAFFINITY;
+		kthread_bind_mask(rescuer->task, cpu_possible_mask);
 		wake_up_process(rescuer->task);
 	}
 

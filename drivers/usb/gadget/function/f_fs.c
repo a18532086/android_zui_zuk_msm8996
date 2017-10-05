@@ -973,9 +973,9 @@ error_lock:
 	spin_unlock_irq(&epfile->ffs->eps_lock);
 	mutex_unlock(&epfile->mutex);
 error:
-	kfree(data);
-	if (ret < 0)
-		pr_err_ratelimited("Error: returning %zd value\n", ret);
+	if (ret < 0 && ret != -ERESTARTSYS)
+		pr_err_ratelimited("%s(): Error: returning %zd value\n",
+							__func__, ret);
 	return ret;
 }
 
@@ -1578,14 +1578,14 @@ static void ffs_data_clear(struct ffs_data *ffs)
 {
 	ENTER();
 
-	pr_debug("%s: ffs->gadget= %p, ffs->flags= %lu\n", __func__,
+	pr_debug("%s: ffs->gadget= %pK, ffs->flags= %lu\n", __func__,
 			ffs->gadget, ffs->flags);
 
 	ffs_closed(ffs);
 
 	/* Dump ffs->gadget and ffs->flags */
 	if (ffs->gadget)
-		pr_err("%s: ffs:%p ffs->gadget= %p, ffs->flags= %lu\n",
+		pr_err("%s: ffs:%pK ffs->gadget= %pK, ffs->flags= %lu\n",
 				__func__, ffs, ffs->gadget, ffs->flags);
 	BUG_ON(ffs->gadget);
 

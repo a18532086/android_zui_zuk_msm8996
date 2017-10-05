@@ -607,7 +607,7 @@ static int cluster_select(struct lpm_cluster *cluster, bool from_idle)
 
 		best_level = i;
 
-		if (sleep_us <= pwr_params->max_residency)
+		if (from_idle && sleep_us <= pwr_params->max_residency)
 			break;
 	}
 
@@ -673,8 +673,6 @@ static int cluster_configure(struct lpm_cluster *cluster, int idx,
 
 	/* Notify cluster enter event after successfully config completion */
 	cluster_notify(cluster, level, true);
-
-	sched_set_cluster_dstate(&cluster->child_cpus, idx, 0, 0);
 
 	cluster->last_level = idx;
 	return 0;
@@ -815,8 +813,6 @@ static void cluster_unprepare(struct lpm_cluster *cluster,
 		BUG_ON(ret);
 
 	}
-	sched_set_cluster_dstate(&cluster->child_cpus, 0, 0, 0);
-
 	cluster_notify(cluster, &cluster->levels[last_level], false);
 	cluster_unprepare(cluster->parent, &cluster->child_cpus,
 			last_level, from_idle, end_time);
@@ -1020,8 +1016,6 @@ static int lpm_cpuidle_enter(struct cpuidle_device *dev,
 		return -EINVAL;
 
 	pwr_params = &cluster->cpu->levels[idx].pwr;
-	sched_set_cpu_cstate(smp_processor_id(), idx + 1,
-		pwr_params->energy_overhead, pwr_params->latency_us);
 
 	cpu_prepare(cluster, idx, true);
 	cluster_prepare(cluster, cpumask, idx, true, ktime_to_ns(ktime_get()));
@@ -1062,6 +1056,7 @@ exit:
 	cpu_unprepare(cluster, idx, true);
 
 	sched_set_cpu_cstate(smp_processor_id(), 0, 0, 0);
+
 	trace_cpu_idle_exit(idx, success);
 	end_time = ktime_to_ns(ktime_get()) - start_time;
 	dev->last_residency = do_div(end_time, 1000);
@@ -1269,7 +1264,6 @@ static int lpm_suspend_enter(suspend_state_t state)
 	struct lpm_cpu *lpm_cpu = cluster->cpu;
 	const struct cpumask *cpumask = get_cpu_mask(cpu);
 	int idx;
-//	int64_t time = ktime_to_ns(ktime_get());
 
 	for (idx = lpm_cpu->nlevels - 1; idx >= 0; idx--) {
 
@@ -1281,7 +1275,6 @@ static int lpm_suspend_enter(suspend_state_t state)
 		return 0;
 	}
 	cpu_prepare(cluster, idx, false);
-//	cluster_prepare(cluster, cpumask, idx, false, time);
 	cluster_prepare(cluster, cpumask, idx, false, 0);
 	if (idx > 0)
 		update_debug_pc_event(CPU_ENTER, idx, 0xdeaffeed,
@@ -1303,9 +1296,6 @@ static int lpm_suspend_enter(suspend_state_t state)
 	if (idx > 0)
 		update_debug_pc_event(CPU_EXIT, idx, true, 0xdeaffeed,
 					false);
-
-//	time = ktime_to_ns(ktime_get());
-//	cluster_unprepare(cluster, cpumask, idx, false, time);
 
 	cluster_unprepare(cluster, cpumask, idx, false, 0);
 	cpu_unprepare(cluster, idx, false);
