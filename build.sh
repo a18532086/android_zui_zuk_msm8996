@@ -1,14 +1,14 @@
 #!/bin/bash
 export CONFIG_FILE="z2_plus_perf_defconfig"
-export TOOL_CHAIN_PATH="/home/a18532086/Downloads/gcc-linaro-7.1.1-2017.08-rc1-x86_64_aarch64-linux-gnu/bin/aarch64-linux-gnu-"
+export TOOL_CHAIN_PATH="/home/a18532086/aarch64-linux-android-4.9/bin/aarch64-linux-android-"
 export objdir="../EASout"
 compile() {
-  mkdir ../EASout
+  mkdir $objdir
   make O=$objdir ARCH=arm64 CROSS_COMPILE=$TOOL_CHAIN_PATH $CONFIG_FILE -j4 
-  make O=$objdir ARCH=arm64 CROSS_COMPILE=$TOOL_CHAIN_PATH -j8
+  make O=$objdir ARCH=arm64 CROSS_COMPILE=$TOOL_CHAIN_PATH -j16
 }
 module(){
-  cd ../EASout
+  cd $objdir
   mkdir modules
   find . -name '*.ko' -exec cp -av {} modules/ \;
   # strip modules 
